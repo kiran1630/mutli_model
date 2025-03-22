@@ -13,9 +13,9 @@ import os
 @st.cache_resource
 def load_model(model_name):
     model_paths = {
-        "ViT": r"C:\Users\Realme\Desktop\image\model\vit_entire_model.pth",
-        "ResNet": r"C:\Users\Realme\Desktop\image\model\model_100_epoch.h5",
-        "VGG": r"C:\Users\Realme\Desktop\image\model\eurosat_rgb_model.h5"
+        "ViT": r"C:\Users\Realme\Desktop\model\vit_entire_model.pth",
+        "ResNet": r"C:\Users\Realme\Desktop\model\model_100_epoch.h5",
+        "VGG": r"C:\Users\Realme\Desktop\model\eurosat_rgb_model.h5"
     }
 
     model_path = model_paths[model_name]
