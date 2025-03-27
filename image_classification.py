@@ -58,6 +58,9 @@ def get_prediction(model, model_name, image_path, class_names):
             pred_idx = torch.argmax(probs, dim=1).item()
             pred_class = class_names[pred_idx]
             pred_prob = probs[0][pred_idx].item()
+        
+        if pred_prob < 0.8:
+            return "Unknown", pred_prob
     else:
         img = load_img(image_path, target_size=(64, 64))
         img_array = img_to_array(img)
@@ -66,6 +69,12 @@ def get_prediction(model, model_name, image_path, class_names):
         predictions = model.predict(img_array)
         predicted_class = class_names[np.argmax(predictions)]
         confidence = np.max(predictions)
+
+    #     return predicted_class, confidence
+
+    # return pred_class, pred_prob
+        if confidence < 0.8:
+            return "Unknown", confidence
 
         return predicted_class, confidence
 
