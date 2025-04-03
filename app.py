@@ -5,7 +5,7 @@ import cv2
 from PIL import Image
 import streamlit as st
 from image_classification import ImageClassifier
-from image_segmentation import segment_image, run_yolo, read_uploaded_image, load_yolo_model
+from image_segmentation import segment_image, run_yolo, read_uploaded_image, load_yolo_model,segmentation
 from landslide_detection import load_model,  predict
 from flood_mapping import load_flood_model, preprocess_image, predict_flood
 import torch
@@ -49,7 +49,7 @@ st.markdown(
 
 # 📌 Sidebar Navigation
 st.sidebar.title("🔍 Navigation")
-page = st.sidebar.radio("Go to", ["🏷 Image Classification", "🎭 Segmentation", "🌍 Landslide Detection", "🌊 Flood Mapping"])
+page = st.sidebar.selectbox("Go to", ["🏷 Image Classification", "🎭 Segmentation", "🌍 Landslide Detection", "🌊 Flood Mapping"])
 
 # 📸 Image Classification
 if page == "🏷 Image Classification":
@@ -61,29 +61,8 @@ if page == "🏷 Image Classification":
 
 # 🎭 Segmentation
 elif page == "🎭 Segmentation":
-    st.title("🎭 Image Segmentation using YOLO")
-    st.write("Upload an image to perform segmentation")
+    segmentation()
 
-    uploaded_file = st.file_uploader("📤 Choose an image for segmentation...", type=["jpg", "png", "jpeg"])
-    conf_threshold = st.slider("🎯 Confidence Threshold", 0.1, 1.0, 0.4, 0.05)
-
-    if uploaded_file is not None:
-        with st.spinner("🔄 Processing..."):
-            image = read_uploaded_image(uploaded_file)
-            segmented_image_path = segment_image(load_yolo_model(), image)
-            time.sleep(1)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image(uploaded_file, caption="📌 Uploaded Image", use_container_width=True)
-        with col2:
-            if segmented_image_path:
-                st.image(segmented_image_path, caption="✅ Segmented Output", use_container_width=True)
-            else:
-                st.warning("⚠️ No segmentation detected.")
-
-        st.write("### 🏷 Object Detection Results")
-        run_yolo(image, conf_threshold)
 
 # 🌍 Landslide Detection
 elif page == "🌍 Landslide Detection":

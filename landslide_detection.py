@@ -1,6 +1,7 @@
 import torch
 from torchvision import transforms
 from PIL import Image
+import numpy as np
 
 def load_model(model_path):
     """Load the landslide detection model."""
@@ -17,13 +18,22 @@ transform = transforms.Compose([
         transforms.ToTensor(),  # Converts to (C, H, W) format
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-    
-    
 
 def predict(image, model):
+    # Ensure the image is in the correct shape and format
+    if isinstance(image, np.ndarray):
+        if image.ndim == 4:  # Remove unnecessary dimensions if present
+            image = np.squeeze(image)  # Removes batch/channel dimensions
+        if image.dtype != np.uint8:  # Convert to uint8 if needed
+            image = (image * 255).astype(np.uint8)
+        
+        image = Image.fromarray(image)  # Convert NumPy array to PIL image
+
     image = transform(image).unsqueeze(0)  # Preprocess and add batch dimension
+
     with torch.no_grad():
         output = model(image)
         predicted_class = torch.argmax(output, dim=1).item()
+
     class_names = ["landslide", "non-landslide"]
     return class_names[predicted_class]
