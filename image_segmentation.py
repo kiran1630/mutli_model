@@ -15,6 +15,32 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from io import BytesIO
 
+
+
+MAP_DEFAULT_LOCATION = [20, 78]
+MAP_DEFAULT_ZOOM = 6
+CONF_THRESHOLD_DEFAULT = 0.4
+CONF_THRESHOLD_STEP = 0.05
+IMAGE_TYPES = ["jpg", "png", "jpeg"]
+SEGMENTATION_ALPHA = 0.4
+DETECTION_BOX_COLOR = 'lime'
+DETECTION_TEXT_COLOR = 'red'
+DETECTION_TEXT_BG_COLOR = 'white'
+YOLO_MODEL_PATH = r"C:\Users\Realme\Desktop\yolo\best.pt"
+DATA_YAML_PATH = r"C:\Users\Realme\Desktop\image\data.yaml"
+
+# Initialize session state for storing values across reruns
+if "selected_image" not in st.session_state:
+    st.session_state.selected_image = None
+if "lat" not in st.session_state:
+    st.session_state.lat = None
+if "lon" not in st.session_state:
+    st.session_state.lon = None
+if "zoom" not in st.session_state:
+    st.session_state.zoom = 6
+if "segmented_image_path" not in st.session_state:
+    st.session_state.segmented_image_path = None
+
 # Cache YOLO model
 @st.cache_resource
 def load_yolo_model():
@@ -26,23 +52,11 @@ def load_class_names():
     with open(r"C:\Users\Realme\Desktop\image\data.yaml", "r") as f:
         return yaml.safe_load(f)["names"]
 
-# Read uploaded image and convert to OpenCV format
-def read_uploaded_image(uploaded_file):
-    if uploaded_file is not None:
-        bytes_data = uploaded_file.read()
-        image = np.array(Image.open(BytesIO(bytes_data)))
-        return cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    return None
-
 # Function to segment image using YOLO
 def segment_image(model, image):
-    if image is None:
-        return None
-    
     results = model(image)
     if results[0].masks is None:
         return None
-    
     mask = results[0].masks.data.cpu().numpy().astype(np.uint8) * 255
     mask = np.max(mask, axis=0)
     mask = cv2.resize(mask, (image.shape[1], image.shape[0]))
@@ -53,50 +67,48 @@ def segment_image(model, image):
     cv2.imwrite(segmented_image_path, segmented_image)
     return segmented_image_path
 
-# Function to run YOLO on image
-def run_yolo(image, conf_threshold):
+
+def run_yolo(model, image, conf_threshold):
     if image is None:
         return
-    st.write("🟡 Passed to Model... Processing...")
-    model = load_yolo_model()
-    class_names = load_class_names()
+    st.write("🟡 Processing Image...")
     results = model(image, conf=conf_threshold, iou=0.1)
     
     if len(results) == 0 or len(results[0].boxes) == 0:
-        st.write("No objects detected.")
+        st.warning("⚠️ No objects detected.")
         return
     
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     class_counts = defaultdict(int)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.imshow(image)
-    
+
     for result in results:
         for box in result.boxes:
             cls_id = int(box.cls[0])
             conf = float(box.conf[0])
-            class_name = class_names[cls_id]
+            class_name = load_class_names()[cls_id]
             class_counts[class_name] += 1
             x1, y1, x2, y2 = map(int, box.xyxy[0])
-            rect = plt.Rectangle((x1, y1), x2 - y1, y2 - y1, linewidth=2, edgecolor='lime', facecolor='none')
+            rect = plt.Rectangle((x1, y1), x2 - y1, y2 - y1, linewidth=2, edgecolor=DETECTION_BOX_COLOR, facecolor='none')
             ax.add_patch(rect)
-            label = f"{class_name} {conf:.2f}"
-            ax.text(x1, y1 - 5, label, color='red', fontsize=10, fontweight='bold', bbox=dict(facecolor='white', alpha=0.5))
-    
+            ax.text(x1, y1 - 5, f"{class_name} {conf:.2f}", color=DETECTION_TEXT_COLOR, fontsize=10, fontweight='bold', bbox=dict(facecolor=DETECTION_TEXT_BG_COLOR, alpha=0.5))
+
     ax.set_xticks([])
     ax.set_yticks([])
     st.pyplot(fig)
-    st.write("✅ Detection Completed")
-    st.write("### Detected Object Counts:")
+
+    st.success("✅ Detection Completed")
+    st.write("### 📊 Object Count:")
     for class_name, count in class_counts.items():
-        st.write(f"{class_name} : {count}")
+        st.write(f"- **{class_name}** : {count}")
 
 # Function to capture map screenshot
 def capture_map_screenshot(lat, lon, zoom):
-    updated_map = folium.Map(location=[lat, lon], zoom_start=zoom, control_scale=False)
+    updated_map = folium.Map(location=[lat, lon], zoom_start=zoom, control_scale=False,zoom_control=False)
     folium.TileLayer(tiles="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", attr="Google").add_to(updated_map)
     updated_map.save("updated_map.html")
-    
+
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
@@ -109,55 +121,82 @@ def capture_map_screenshot(lat, lon, zoom):
     screenshot_path = "captured_map.png"
     driver.save_screenshot(screenshot_path)
     driver.quit()
-    image = Image.open(screenshot_path)
-    image = image.convert("RGB")  # Convert to RGB to avoid broken PNG issue
-    image = image.crop((0, 0, 800, 500))
-    image.save(screenshot_path)
+    
     return screenshot_path
 def segmentation():
-    # Streamlit UI
     st.title("🎭 Image Segmentation using YOLO")
     st.write("Select an image from the map or upload one manually.")
 
-    # User selection
     mode = st.pills("Choose Mode:", ["Manual Upload", "Interactive Map"])
     selected_image = None
+    button_label = "📸 Capture & Segment Map Image" if mode == "Interactive Map" else "▶ Process Image"
 
     if mode == "Interactive Map":
-        m = folium.Map(location=[20, 78], zoom_start=6, control_scale=False)
+        m = folium.Map(location=[20, 78], zoom_start=6, control_scale=False,zoom_control=False)
         folium.TileLayer(tiles="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", attr="Google").add_to(m)
         map_data = st_folium(m, height=500, width=800, returned_objects=["last_clicked", "zoom"])
         st.write("📍 Click on the map to select an area")
-        
-        if map_data and "last_clicked" in map_data and map_data["last_clicked"]:
-            lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
-            zoom = map_data.get("zoom", 6)
-            screenshot_path = capture_map_screenshot(lat, lon, zoom)
-            st.image(screenshot_path, caption="📌 Selected Map Image", use_container_width=True)
-            selected_image = cv2.imread(screenshot_path)
+
+        if st.button(button_label):
+            print(f"{button_label} button clicked")
+            if map_data and "last_clicked" in map_data and map_data["last_clicked"]:
+                lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
+                
+                st.markdown(f"### Selected Location:", unsafe_allow_html=True)
+                st.markdown(f"### **Latitude : `{lat}`**", unsafe_allow_html=True)
+                st.markdown(f"### **Longitude: `{lon}`**", unsafe_allow_html=True)
+                
+
+                #zoom = map_data.get("zoom", 6)
+                zoom = map_data["zoom"] if "zoom" in map_data else 10 
+                screenshot_path = capture_map_screenshot(lat, lon, zoom)
+
+                if screenshot_path:
+                    model = load_yolo_model()
+                    selected_image = cv2.imread(screenshot_path)
+                    segmented_image_path = segment_image(model, selected_image)
+
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(screenshot_path, caption="📌 Captured Map Image", use_container_width=True)
+                    with col2:
+                        if segmented_image_path:
+                            st.image(segmented_image_path, caption="✅ Segmented Output", use_container_width=True)
+                        else:
+                            st.warning("⚠️ No segmentation detected.")
+
+                    if segmented_image_path:
+                        with open(segmented_image_path, "rb") as img_file:
+                            st.download_button("📥 Download Segmented Image", img_file, file_name="segmented_map.png", mime="image/png")
+
+                    conf_threshold = st.slider("🎯 Confidence Threshold", 0.1, 1.0, 0.4, 0.05)
+                    run_yolo(model,selected_image, conf_threshold)  # Ensure OpenCV format
+
+                else:
+                    st.error("❌ Failed to capture map. Try again.")
+            else:
+                st.warning("⚠️ Please select a location on the map before capturing.")
+
     else:
         uploaded_file = st.file_uploader("📤 Choose an image for segmentation...", type=["jpg", "png", "jpeg"])
-        if uploaded_file is not None:
-            selected_image = read_uploaded_image(uploaded_file)
+        if uploaded_file:
+            selected_image = Image.open(uploaded_file)
 
-    conf_threshold = st.slider("🎯 Confidence Threshold", 0.1, 1.0, 0.4, 0.05)
+        conf_threshold = st.slider("🎯 Confidence Threshold", 0.1, 1.0, 0.4, 0.05)
 
-    if selected_image is not None:
-        st.write("🟢 Image Selected")
-        process_button = st.button("▶ Process Image")
-        
-        if process_button:
+        if selected_image and st.button(button_label):
+            print(f"{button_label} button clicked")
             st.write("🔄 Image Sent to Model...")
             with st.spinner("Processing..."):
-                segmented_image_path = segment_image(load_yolo_model(), selected_image)
-                time.sleep(1)
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                st.image(selected_image, caption="📌 Input Image", use_container_width=True)
-            with col2:
+                selected_image_cv = np.array(selected_image.convert('RGB'))
+                selected_image_cv = cv2.cvtColor(selected_image_cv, cv2.COLOR_RGB2BGR)
+                model = load_yolo_model()
+                segmented_image_path = segment_image(model, selected_image_cv)
+
                 if segmented_image_path:
-                    st.image(segmented_image_path, caption="✅ Segmented Output", use_container_width=True)
+                    run_yolo(model,selected_image_cv, conf_threshold)
                 else:
-                    st.warning("⚠️ No segmentation detected.")
-            run_yolo(selected_image, conf_threshold)
+                    print("Segmentation failed, YOLO not called")
+
+
+

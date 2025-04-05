@@ -5,7 +5,7 @@ import cv2
 from PIL import Image
 import streamlit as st
 from image_classification import ImageClassifier
-from image_segmentation import segment_image, run_yolo, read_uploaded_image, load_yolo_model,segmentation
+from image_segmentation import segmentation
 from landslide_detection import load_model,  predict
 from flood_mapping import load_flood_model, preprocess_image, predict_flood
 import torch

@@ -129,6 +129,10 @@ class ImageClassifier:
                 lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
                 zoom = map_data.get("zoom", 6)
 
+                st.markdown(f"### Selected Location:", unsafe_allow_html=True)
+                st.markdown(f"### **Latitude : `{lat}`**", unsafe_allow_html=True)
+                st.markdown(f"### **Longitude: `{lon}`**", unsafe_allow_html=True)
+
                 screenshot_path = self.capture_map_screenshot(lat, lon, zoom)
                 
                 if os.path.exists(screenshot_path):
