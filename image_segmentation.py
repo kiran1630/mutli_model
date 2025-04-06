@@ -26,7 +26,7 @@ SEGMENTATION_ALPHA = 0.4
 DETECTION_BOX_COLOR = 'lime'
 DETECTION_TEXT_COLOR = 'red'
 DETECTION_TEXT_BG_COLOR = 'white'
-YOLO_MODEL_PATH = r"C:\Users\Realme\Desktop\yolo\best.pt"
+YOLO_MODEL_PATH = r"C:\Users\Realme\Desktop\yolo\best (1).pt"
 DATA_YAML_PATH = r"C:\Users\Realme\Desktop\image\data.yaml"
 
 # Initialize session state for storing values across reruns
@@ -127,7 +127,8 @@ def segmentation():
     st.title("🎭 Image Segmentation using YOLO")
     st.write("Select an image from the map or upload one manually.")
 
-    mode = st.pills("Choose Mode:", ["Manual Upload", "Interactive Map"])
+    mode = st.selectbox("Choose Mode:", ["Manual Upload", "Interactive Map", "Manual Coordinates"])
+
     selected_image = None
     button_label = "📸 Capture & Segment Map Image" if mode == "Interactive Map" else "▶ Process Image"
 
@@ -176,6 +177,36 @@ def segmentation():
                     st.error("❌ Failed to capture map. Try again.")
             else:
                 st.warning("⚠️ Please select a location on the map before capturing.")
+    elif mode == "Manual Coordinates":
+            lat = st.number_input("Enter Latitude", value=20.0, format="%.6f")
+            lon = st.number_input("Enter Longitude", value=78.0, format="%.6f")
+            zoom = st.slider("Zoom Level", min_value=1, max_value=20, value=10)
+
+            if st.button("📍 Fetch Image from Coordinates"):
+                screenshot_path = capture_map_screenshot(lat, lon, zoom)
+
+                if screenshot_path:
+                    model = load_yolo_model()
+                    selected_image = cv2.imread(screenshot_path)
+                    segmented_image_path = segment_image(model, selected_image)
+
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(screenshot_path, caption="🌍 Captured Map Image", use_container_width=True)
+                    with col2:
+                        if segmented_image_path:
+                            st.image(segmented_image_path, caption="✅ Segmented Output", use_container_width=True)
+                        else:
+                            st.warning("⚠️ No segmentation detected.")
+
+                    if segmented_image_path:
+                        with open(segmented_image_path, "rb") as img_file:
+                            st.download_button("📥 Download Segmented Image", img_file, file_name="segmented_map.png", mime="image/png")
+
+                    conf_threshold = st.slider("🎯 Confidence Threshold", 0.1, 1.0, 0.4, 0.05)
+                    run_yolo(model, selected_image, conf_threshold)
+                else:
+                    st.error("❌ Failed to fetch map image.")
 
     else:
         uploaded_file = st.file_uploader("📤 Choose an image for segmentation...", type=["jpg", "png", "jpeg"])

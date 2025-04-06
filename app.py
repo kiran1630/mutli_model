@@ -49,11 +49,11 @@ st.markdown(
 
 # 📌 Sidebar Navigation
 st.sidebar.title("🔍 Navigation")
-page = st.sidebar.selectbox("Go to", ["🏷 Image Classification", "🎭 Segmentation", "🌍 Landslide Detection", "🌊 Flood Mapping"])
+page = st.sidebar.selectbox("Go to", ["🏷 Image Classification", "🎭 Segmentation", "🌍 Landslide Detection"])
 
 # 📸 Image Classification
 if page == "🏷 Image Classification":
-    st.title("🔎 Image Classification")
+    st.title("🌍 Satellite Image Classification")
     st.write("Upload an image to classify objects.")
 
     classifier = ImageClassifier()

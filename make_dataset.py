@@ -4,10 +4,10 @@ import shutil
 
 # Paths
 source_dir = r"D:\download\EuroSATd"  # Main dataset directory
-output_dir = r"D:\download\euro"  # Directory where train/test will be saved
+output_dir = r"D:\download\euro1"  # Directory where train/test will be saved
 
 train_ratio = 0.8  # 80% training, 20% testing
-images_per_class = 650  # Select 650 random images per class
+images_per_class = 2000  # Select 650 random images per class
 
 # Create train and test directories
 train_dir = os.path.join(output_dir, "train")

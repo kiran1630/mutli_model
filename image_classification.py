@@ -105,36 +105,102 @@ class ImageClassifier:
 
             return predicted_class, confidence
 
+
+
     def run(self):
-        st.title("🌍 Satellite Image Classification with AI")
 
         model_option = st.selectbox("Choose a Model:", ("ViT", "ResNet", "VGG"))
         
-        # ✅ Call the cached function outside the class
         model = load_classification_model(model_option)
 
-        st.write("📍 Click on the map to select a location")
+        st.markdown("### 🔍 Select Input Mode")
+        input_mode = st.pills(
+            "MODE",
+            ["🌍 Interactive Map", "🖼️ Manual Upload", "📌 Lat & Long Input"],
+           
+        )
 
-        m = folium.Map(location=[20, 78], zoom_start=6, control_scale=False)
-        folium.TileLayer(
-            tiles="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", 
-            attr="Google",
-            name="Google Satellite",
-        ).add_to(m)
+        if input_mode == "🌍 Interactive Map":
+            st.write("📍 Click on the map to select a location")
 
-        map_data = st_folium(m, height=500, width=800, returned_objects=["last_clicked", "zoom"])
+            m = folium.Map(location=[20, 78], zoom_start=6, control_scale=False)
+            folium.TileLayer(
+                tiles="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", 
+                attr="Google",
+                name="Google Satellite",
+            ).add_to(m)
 
-        if st.button("📸 Capture & Classify Map Image"):
-            if map_data and "last_clicked" in map_data and map_data["last_clicked"]:
-                lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
-                zoom = map_data.get("zoom", 6)
+            map_data = st_folium(m, height=500, width=800, returned_objects=["last_clicked", "zoom"])
 
-                st.markdown(f"### Selected Location:", unsafe_allow_html=True)
-                st.markdown(f"### **Latitude : `{lat}`**", unsafe_allow_html=True)
-                st.markdown(f"### **Longitude: `{lon}`**", unsafe_allow_html=True)
+            if st.button("📸 Capture & Classify Map Image"):
+                if map_data and "last_clicked" in map_data and map_data["last_clicked"]:
+                    lat, lon = map_data["last_clicked"]["lat"], map_data["last_clicked"]["lng"]
+                    zoom = map_data.get("zoom", 6)
+
+                    st.markdown(f"### **Latitude : `{lat}`**")
+                    st.markdown(f"### **Longitude: `{lon}`**")
+
+                    screenshot_path = self.capture_map_screenshot(lat, lon, zoom)
+                    
+                    if os.path.exists(screenshot_path):
+                        image = Image.open(screenshot_path)
+                        predicted_class, predicted_prob = self.get_prediction(model, model_option, screenshot_path)
+
+                        col1, col2 = st.columns([1, 1])
+                        with col1:
+                            st.image(image, caption="Captured Satellite Image", use_container_width=True)
+                        with col2:
+                            st.write(f"**Model Selected:** {model_option}")
+                            st.write(f"**Predicted Class:** {predicted_class}")
+                            st.write(f"**Confidence:** {predicted_prob:.3f}")
+
+                        with open(screenshot_path, "rb") as img_file:
+                            st.download_button(
+                                label="📥 Download Captured Image",
+                                data=img_file,
+                                file_name="classified_map.png",
+                                mime="image/png"
+                            )
+                    else:
+                        st.error("❌ Failed to capture map. Try again.")
+                else:
+                    st.warning("⚠️ Please select a location on the map before capturing.")
+
+        elif input_mode == "🖼️ Manual Upload":
+            uploaded_file = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
+            
+            if uploaded_file is not None:
+                image = Image.open(uploaded_file)
+                st.image(image, caption="Uploaded Image", use_container_width=True)
+
+                with st.spinner("Classifying..."):
+                    image_path = "uploaded_temp_image.png"
+                    image.save(image_path)
+
+                    predicted_class, predicted_prob = self.get_prediction(model, model_option, image_path)
+
+                    st.write(f"**Model Selected:** {model_option}")
+                    st.write(f"**Predicted Class:** {predicted_class}")
+                    st.write(f"**Confidence:** {predicted_prob:.3f}")
+                    
+                    st.download_button(
+                        label="📥 Download Uploaded Image",
+                        data=uploaded_file,
+                        file_name="classified_uploaded_image.png",
+                        mime="image/png"
+                    )
+
+        elif input_mode == "📌 Lat & Long Input":
+            lat = st.number_input("Enter Latitude", min_value=-90.0, max_value=90.0, format="%.6f")
+            lon = st.number_input("Enter Longitude", min_value=-180.0, max_value=180.0, format="%.6f")
+            zoom = st.slider("Zoom Level", min_value=1, max_value=20, value=15)
+
+            if st.button("🔍 Capture from Coordinates"):
+                st.markdown(f"### **Latitude : `{lat}`**")
+                st.markdown(f"### **Longitude: `{lon}`**")
 
                 screenshot_path = self.capture_map_screenshot(lat, lon, zoom)
-                
+
                 if os.path.exists(screenshot_path):
                     image = Image.open(screenshot_path)
                     predicted_class, predicted_prob = self.get_prediction(model, model_option, screenshot_path)
@@ -156,5 +222,4 @@ class ImageClassifier:
                         )
                 else:
                     st.error("❌ Failed to capture map. Try again.")
-            else:
-                st.warning("⚠️ Please select a location on the map before capturing.")
+
