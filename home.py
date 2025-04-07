@@ -7,8 +7,7 @@ from PIL import Image
 import streamlit as st
 from image_classification import ImageClassifier
 from image_segmentation import segmentation
-from landslide_detection import load_model,  predict
-from flood_mapping import load_flood_model, preprocess_image, predict_flood
+from landslide_detection import load_model,  predict,preprocess_image
 import torch
 import tensorflow as tf
 import numpy as np
@@ -112,7 +111,9 @@ page = st.sidebar.selectbox(
         "🏔️ Landslide Detection",
         
     ],
-    label_visibility="collapsed"
+    label_visibility="collapsed",
+    key="page_selector"
+
 )
 
 # ---- Page Content Routing ----

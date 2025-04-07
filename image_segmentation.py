@@ -469,4 +469,3 @@ def segmentation():
 
 
 # --- Make sure to call the main function ---
-segmentation()
