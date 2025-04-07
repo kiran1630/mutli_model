@@ -24,6 +24,7 @@ from io import BytesIO
 from collections import defaultdict
 import seaborn as sn
 import random
+# import home
 
 
 
@@ -49,7 +50,8 @@ st.markdown(
 
 # 📌 Sidebar Navigation
 st.sidebar.title("🔍 Navigation")
-page = st.sidebar.selectbox("Go to", ["🏷 Image Classification", "🎭 Segmentation", "🌍 Landslide Detection"])
+page = st.sidebar.selectbox("Go to", ["🏷 Image Classification", "🎭 Segmentation", "🏔️ Landslide Detection"])
+
 
 # 📸 Image Classification
 if page == "🏷 Image Classification":
@@ -65,8 +67,8 @@ elif page == "🎭 Segmentation":
 
 
 # 🌍 Landslide Detection
-elif page == "🌍 Landslide Detection":
-    st.title("🌍 Landslide Detection using ViT Model")
+elif page == "🏔️ Landslide Detection":
+    st.title("🏔️ Landslide Detection using ViT Model")
     st.write("Upload an image to classify it as a landslide or non-landslide.")
 
     model = load_model(r"C:\Users\Realme\Downloads\vit_small_model.pth")

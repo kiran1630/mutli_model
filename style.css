@@ -1,0 +1,103 @@
+/* style.css */
+
+/* --- 1. Import Google Font: Inter --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* --- 2. Base Font Settings (Apply broadly) --- */
+/* Applied by Python dynamically, but define defaults */
+body, [data-testid="stAppViewContainer"], .main {
+    font-family: 'Inter', sans-serif;
+    font-size: 16.5px; /* Base size */
+    font-weight: 400;
+    line-height: 1.65;
+}
+
+/* --- 3. Styles specific to the custom background theme --- */
+/* These styles define how elements look *with* the background */
+
+/* Base text color & padding for the main container */
+[data-testid="stAppViewContainer"] {
+    color: #E0E0E0; /* Default text color (soft white) */
+    padding: 1.5rem 2.5rem;
+    /* Background properties are set dynamically in app.py */
+}
+
+/* General elements within main content */
+.main .block-container p,
+.main .block-container li,
+.main .block-container div:not([data-testid]) {
+    color: #E0E0E0 !important; /* Light color for readability */
+    font-size: 1.05em; /* Relative to base size */
+}
+
+.main .block-container strong {
+    color: #FFFFFF; /* Pure white for bold */
+    font-weight: 700; /* Bold weight */
+}
+
+/* Specific classes */
+.home-title {
+    font-family: 'Inter', sans-serif; /* Consistent font */
+    font-size: 3.2em;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+    margin-bottom: 0.6em;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.home-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.35em;
+    font-weight: 400;
+    color: #B0B0B0; /* Muted gray */
+    margin-bottom: 2em;
+    line-height: 1.5;
+}
+
+/* List styling */
+ul.feature-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 1.8em;
+    margin-bottom: 2em;
+}
+
+ul.feature-list li {
+    font-size: 1.15em;
+    font-weight: 400;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+}
+ul.feature-list li:last-child {
+    border-bottom: none;
+}
+
+ul.feature-list li strong {
+    font-weight: 500; /* Medium weight */
+    color: #23D997;   /* Vibrant highlight */
+}
+
+/* General lists (like 'Built with') */
+.main .block-container ul:not(.feature-list) {
+    list-style-position: outside;
+    padding-left: 25px;
+    margin-bottom: 1.8em;
+    font-size: 1.05em; /* Consistent size */
+}
+.main .block-container ul:not(.feature-list) li {
+    margin-bottom: 10px;
+    color: #D0D0D0; /* Slightly dimmer list items */
+}
+
+/* Sidebar adjustments (Optional) */
+[data-testid="stSidebar"] {
+    /* background-color: rgba(44, 62, 80, 0.9); */ /* Example semi-transparent */
+}
+[data-testid="stSidebar"] .stSelectbox label {
+   font-weight: 500;
+   /* color: #EAEAEA; */ /* Lighter label color if needed */
+}
+
+/* Add other styles that should apply when the dark background is active */
