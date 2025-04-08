@@ -27,8 +27,8 @@ if "zoom" not in st.session_state:
 @st.cache_resource
 def load_classification_model(model_name):
     model_paths = {
-        "ViT": r"C:\Users\Realme\Desktop\model\vit_entire_model.pth",
-        "ResNet": r"C:\Users\Realme\Desktop\model\RES_NET_50_.h5",
+        "ViT": r"C:\Users\Realme\Desktop\new model\vit_entire_model.pth",
+        "ResNet": r"C:\Users\Realme\Desktop\new model\resnet50.h5",
         "VGG": r"C:\Users\Realme\Desktop\model\VGG_NET.h5"
     }
 
@@ -56,10 +56,10 @@ class ImageClassifier:
         Captures a map screenshot using Selenium, centers it on lat/lon,
         and crops it to exactly 640x640 pixels.
         """
-        target_size = 540
+        target_size = 340
         # Capture a larger area to ensure the 640x640 center is available
         # Increased height buffer slightly more for potential browser chrome
-        capture_width, capture_height = 640, 640
+        capture_width, capture_height = 440, 440
 
         map_html_path = "updated_map.html"
         screenshot_full_path = "captured_map_full.png"  # Temporary path for the large screenshot

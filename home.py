@@ -112,7 +112,7 @@ page = st.sidebar.selectbox(
         
     ],
     label_visibility="collapsed",
-    key="page_selector"
+    key="select_bySideBar"
 
 )
 
@@ -159,7 +159,7 @@ elif page == "🏷 Image Classification":
 
 # ----- Segmentation Page -----
 elif page == "🎭 Segmentation":
-    st.header("🎭 Segmentation")
+    st.header(" Image Segmentation using YOLO ")
     st.info("Upload a satellite image for segmentation.")
     try:
         segmentation() # Call your segmentation function

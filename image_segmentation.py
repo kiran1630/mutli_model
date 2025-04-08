@@ -48,16 +48,18 @@ if "segmentation_model" not in st.session_state:
     st.session_state["segmentation_model"] = None
 if "conf_threshold" not in st.session_state:
     st.session_state["conf_threshold"] = 0.5
+if "conf_threshold" not in st.session_state:
+    st.session_state.conf_threshold = 0.5 
 
 
 
-# --- ADD/ENSURE THESE INITIALIZATIONS ARE PRESENT ---
-if "image_path" not in st.session_state:
-    st.session_state.image_path = None        # <--- Crucial fix
-if "segmented_image_path" not in st.session_state:
-    st.session_state.segmented_image_path = None # <--- Initialize this too
-if 'conf_threshold' not in st.session_state:     # Initialize the slider value state
-     st.session_state.conf_threshold = CONF_THRESHOLD_DEFAULT
+# # --- ADD/ENSURE THESE INITIALIZATIONS ARE PRESENT ---
+# if "image_path" not in st.session_state:
+#     st.session_state.image_path = None        # <--- Crucial fix
+# if "segmented_image_path" not in st.session_state:
+#     st.session_state.segmented_image_path = None # <--- Initialize this too
+# if 'conf_threshold' not in st.session_state:     # Initialize the slider value state
+#      st.session_state.conf_threshold = CONF_THRESHOLD_DEFAULT
 
 
 
@@ -256,7 +258,7 @@ def capture_map_screenshot(lat, lon, zoom):
 
 
 def segmentation():
-    st.title("Image Segmentation using YOLO")
+    # st.title("Image Segmentation using YOLO")
     st.write("Select an image from the map or upload one manually.")
 
     # Load model once at the beginning
@@ -468,4 +470,4 @@ def segmentation():
                       st.rerun() # Rerun to go back to the initial selection state
 
 
-# --- Make sure to call the main function ---
+
