@@ -60,3 +60,15 @@ A powerful Streamlit-based application that leverages advanced deep learning mod
 ---
 <img src="screenshort/home page.png" alt="Model Architecture" width="500"/>
 <img src="screenshort/classification 1.png" alt="Model Architecture" width="500"/>
+
+
+<table>
+  <tr>
+    <td>< img src="screenshort/home page.png" alt="Image 1" width="300"></td>
+    <td><img src="screenshort/classification 1.png" alt="Image 2" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="screenshort/classification 2.png" alt="Image 3" width="300"></td>
+    <td><img src="screenshort/landslide.png" alt="Image 4" width="300"></td>
+  </tr>
+</table>
