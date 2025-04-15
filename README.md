@@ -59,3 +59,4 @@ A powerful Streamlit-based application that leverages advanced deep learning mod
    streamlit run home.py 
 ---
 <img src="screenshort/home page.png" alt="Model Architecture" width="500"/>
+<img src="screenshort/classification 1.png" alt="Model Architecture" width="500"/>
