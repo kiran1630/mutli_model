@@ -59,4 +59,4 @@ A powerful Streamlit-based application that leverages advanced deep learning mod
    streamlit run home.py 
 ---
 
-![Web Page ](screenshort/home.jpeg)
+![Web Page](screenshort/home page.png)
