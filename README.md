@@ -60,13 +60,29 @@ A powerful Streamlit-based application that leverages advanced deep learning mod
 ---
 
 
-<table>
-  <tr>
-    <td><img src="screenshort/home page.png" alt="Image 1" width="300"></td>
-    <td><img src="screenshort/classification 1.png" alt="Image 2" width="300"></td>
-  </tr>
-  <tr>
-    <td><img src="screenshort/classification 2.png" alt="Image 3" width="300"></td>
-    <td><img src="screenshort/landlslide.png" alt="Image 4" width="300"></td>
-  </tr>
-</table>
+<style>
+.column {
+  width: 50%;
+  display: inline-block;
+  box-sizing: border-box; /* To include padding and border in the element's total width and height */
+}
+
+.column img {
+  max-width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Prevent extra space below inline images */
+}
+</style>
+
+<div class="column">
+  <img src="screenshort/home page.png" alt="Image 1">
+</div>
+<div class="column">
+  <img src="screenshort/classification 1.png" alt="Image 2">
+</div>
+<div class="column">
+  <img src="screenshort/classification 2.png" alt="Image 3">
+</div>
+<div class="column">
+  <img src="screenshort/landlslide.png" alt="Image 4">
+</div>
