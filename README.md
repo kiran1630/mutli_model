@@ -67,6 +67,6 @@ A powerful Streamlit-based application that leverages advanced deep learning mod
   </tr>
   <tr>
     <td><img src="screenshort/classification 2.png" alt="Image 3" width="300"></td>
-    <td><img src="screenshort/landslide.png" alt="Image 4" width="300"></td>
+    <td><img src="screenshort/landlslide.png" alt="Image 4" width="300"></td>
   </tr>
 </table>
