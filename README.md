@@ -58,4 +58,4 @@ A powerful Streamlit-based application that leverages advanced deep learning mod
    ```bash
    streamlit run home.py 
 ---
-![Web Page](screenshort/home page.png)
+![Web Page] (screenshort/home page.png)
