@@ -67,7 +67,7 @@ static_css = load_css(css_file_path)
 
 # 2. Try to load the background image
 # !!! IMPORTANT: Replace this path with the ACTUAL path to your background image !!!
-local_image_path = r"C:\Users\Realme\Downloads\pic1.png" # << CHANGE THIS PATH !!
+local_image_path = r"C:\Downloads\pic1.png" # << CHANGE THIS PATH !!
 # local_image_path = "pic1.png" # Use this if image is in the same folder
 
 img_base64 = None
@@ -175,7 +175,7 @@ elif page == "🏔️ Landslide Detection":
     st.info("Upload an image to classify it as landslide or non-landslide using a ViT model.")
     try:
         
-        landslide_model_path =  r"C:\Users\Realme\Downloads\vit_small_model.pth"
+        landslide_model_path =  r"vit_small_model.pth"
         if not os.path.exists(landslide_model_path):
              st.error(f"Landslide model not found at {landslide_model_path}")
              model = None

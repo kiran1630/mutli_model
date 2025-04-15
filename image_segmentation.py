@@ -26,8 +26,8 @@ SEGMENTATION_ALPHA = 0.4
 DETECTION_BOX_COLOR = 'lime'
 DETECTION_TEXT_COLOR = 'red'
 DETECTION_TEXT_BG_COLOR = 'white'
-YOLO_MODEL_PATH = r"C:\Users\Realme\Desktop\new model\new_best.pt"
-DATA_YAML_PATH = r"C:\Users\Realme\Desktop\new model\data (2).yaml"
+YOLO_MODEL_PATH = "new_best.pt"
+DATA_YAML_PATH = "data (2).yaml"
 
 if 'image_path' not in st.session_state:
     st.session_state.image_path = None
@@ -59,7 +59,7 @@ def load_yolo_model():
 # Cache class names
 @st.cache_resource
 def load_class_names():
-    with open(r"C:\Users\Realme\Desktop\new model\data (2).yaml", "r") as f:
+    with open(r"data (2).yaml", "r") as f:
         return yaml.safe_load(f)["names"]
 
 # Function to segment image using YOLO

@@ -27,10 +27,10 @@ if "zoom" not in st.session_state:
 @st.cache_resource
 def load_classification_model(model_name):
     model_paths = {
-        "ViT": r"C:\Users\Realme\Desktop\new model\vit_entire_model.pth",
-        "ResNet": r"C:\Users\Realme\Desktop\new model\resnet50.h5",
+        "ViT": "vit_entire_model.pth",
+        "ResNet": "resnet50.h5",
         
-        "VGG": r"C:\Users\Realme\Desktop\model\VGG_NET.h5"
+        "VGG": "VGG_NET.h5"
     }
 
     model_path = model_paths[model_name]
