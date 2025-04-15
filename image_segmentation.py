@@ -26,40 +26,25 @@ SEGMENTATION_ALPHA = 0.4
 DETECTION_BOX_COLOR = 'lime'
 DETECTION_TEXT_COLOR = 'red'
 DETECTION_TEXT_BG_COLOR = 'white'
-YOLO_MODEL_PATH = r"C:\Users\Realme\Desktop\yolo\best (1).pt"
-DATA_YAML_PATH = r"C:\Users\Realme\Desktop\image\data.yaml"
+YOLO_MODEL_PATH = r"C:\Users\Realme\Desktop\new model\new_best.pt"
+DATA_YAML_PATH = r"C:\Users\Realme\Desktop\new model\data (2).yaml"
 
-
-
-if "selected_image" not in st.session_state:  # Keeping your original ones too
-    st.session_state.selected_image = None
-if "lat" not in st.session_state:
-    st.session_state.lat = None
-if "lon" not in st.session_state:
-    st.session_state.lon = None
-if "zoom" not in st.session_state:
-    st.session_state.zoom = 6 # Or your desired default zoom
-
-if "image_path" not in st.session_state:
-    st.session_state["image_path"] = None
-if "model" not in st.session_state:
-    st.session_state["model"] = None
-if "segmentation_model" not in st.session_state:
-    st.session_state["segmentation_model"] = None
-if "conf_threshold" not in st.session_state:
-    st.session_state["conf_threshold"] = 0.5
-if "conf_threshold" not in st.session_state:
-    st.session_state.conf_threshold = 0.5 
-
-
-
-# # --- ADD/ENSURE THESE INITIALIZATIONS ARE PRESENT ---
-# if "image_path" not in st.session_state:
-#     st.session_state.image_path = None        # <--- Crucial fix
-# if "segmented_image_path" not in st.session_state:
-#     st.session_state.segmented_image_path = None # <--- Initialize this too
-# if 'conf_threshold' not in st.session_state:     # Initialize the slider value state
-#      st.session_state.conf_threshold = CONF_THRESHOLD_DEFAULT
+if 'image_path' not in st.session_state:
+    st.session_state.image_path = None
+if 'segmented_image_path' not in st.session_state:
+    st.session_state.segmented_image_path = None
+if 'model' not in st.session_state:
+    st.session_state.model = None
+if 'segmentation_model' not in st.session_state:
+    st.session_state.segmentation_model = None
+if 'conf_threshold' not in st.session_state:
+    st.session_state.conf_threshold = 0.5
+# if 'lat' not in st.session_state:
+#     st.session_state.lat = 20.0
+# if 'lon' not in st.session_state:
+#     st.session_state.lon = 78.0
+# if 'zoom' not in st.session_state:
+#     st.session_state.zoom = 10
 
 
 
@@ -74,7 +59,7 @@ def load_yolo_model():
 # Cache class names
 @st.cache_resource
 def load_class_names():
-    with open(r"C:\Users\Realme\Desktop\image\data.yaml", "r") as f:
+    with open(r"C:\Users\Realme\Desktop\new model\data (2).yaml", "r") as f:
         return yaml.safe_load(f)["names"]
 
 # Function to segment image using YOLO
@@ -94,10 +79,12 @@ def segment_image(model, image):
 
 
 def run_yolo(model, image, conf_threshold):
+    print("model_function")
+    conf_threshold = 0.5
     if image is None:
         return
     st.write("🟡 Processing Image...")
-    results = model(image, conf=conf_threshold, iou=0.1)
+    results = model(image, conf=conf_threshold, iou=0.65)
     
     if len(results) == 0 or len(results[0].boxes) == 0:
         st.warning("⚠️ No objects detected.")
@@ -128,9 +115,6 @@ def run_yolo(model, image, conf_threshold):
     for class_name, count in class_counts.items():
         st.write(f"- **{class_name}** : {count}")
 
-# Function to capture map screenshot
-# === Replace your existing capture_map_screenshot function with this one ===
-# Make sure you have 'import cv2' and 'import os' at the top of your script.
 
 def capture_map_screenshot(lat, lon, zoom):
     """
@@ -307,7 +291,7 @@ def segmentation():
             st.metric("Current Zoom", current_zoom)
 
             # Capture button
-            if st.button("📸 Capture 640x640 Map Area", key="capture_interactive"):
+            if st.button("📸 Capture 640x640 Map Area", key="capture_interactive_for_seg"):
                 if current_lat and current_lon:
                     st.session_state.lat = current_lat
                     st.session_state.lon = current_lon
@@ -370,7 +354,7 @@ def segmentation():
 
     # --- Processing Section ---
     # This section runs only if an image path is stored in session state
-
+    print("got image")
     if st.session_state.image_path is not None:
         current_image_path = st.session_state.image_path
         print(f"Processing image path from session state: {current_image_path}")
@@ -427,6 +411,7 @@ def segmentation():
                 # --- Confidence Slider (Now it won't reset the image) ---
                 st.write("---")
                 st.subheader("⚙️ Detection Controls")
+                st.session_state.conf_threshold = 0.5
                 # Use st.session_state to make slider value persistent if needed elsewhere,
                 # or just read its value directly for run_yolo
                 conf_threshold = st.slider(
@@ -467,7 +452,7 @@ def segmentation():
                       st.session_state.conf_threshold = CONF_THRESHOLD_DEFAULT # Reset slider value too
                       # Clear file uploader state explicitly if needed
                       # st.session_state.file_uploader = None # Requires key on file_uploader
-                      st.rerun() # Rerun to go back to the initial selection state
-
+                      st.rerun() # Rerun to go back to the initial selection stat
+                
 
 

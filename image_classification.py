@@ -29,6 +29,7 @@ def load_classification_model(model_name):
     model_paths = {
         "ViT": r"C:\Users\Realme\Desktop\new model\vit_entire_model.pth",
         "ResNet": r"C:\Users\Realme\Desktop\new model\resnet50.h5",
+        
         "VGG": r"C:\Users\Realme\Desktop\model\VGG_NET.h5"
     }
 
@@ -175,7 +176,7 @@ class ImageClassifier:
                 except OSError: pass
 
     def get_prediction(self, model, model_name, image_path):
-            if model_name == "ViT":
+            if model_name == "ViT": 
                 from torchvision import transforms
                 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -260,7 +261,7 @@ class ImageClassifier:
 
                 show_result = False
 
-                if st.button("📸 Capture & Classify Map Image", key="capture_interactive"):
+                if st.button("📸 Capture & Classify Map Image", key="capture_interactive_for_Classify"):
                     if lat and lon:
                         with st.spinner(f"Capturing map at {lat:.4f}, {lon:.4f} (Zoom: {zoom})..."):
                             screenshot_path = self.capture_map_screenshot(lat, lon, zoom)

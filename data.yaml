@@ -1,28 +1,22 @@
-nc: 15  # Number of classes
-
-names: 
-  - Lakes
-  - agricultural_land
-  - bridge
-  - building
-  - dryland
-  - forest
-  - greenland
-  - metalled_road
-  - pond
-  - railway
-  - river
-  - road
-  - trees
-  - unmetalled_road
-  - wetland
-
+names:
+- Barren_Land
+- Building
+- Field
+- Land
+- Road
+- Water_Body
+- agricultural_land
+- dryland
+- greenland
+- trees
+nc: 10
 roboflow:
   license: CC BY 4.0
-  project: merged-project-jc97b
-  url: https://universe.roboflow.com/satelliteseg/merged-project-jc97b/dataset/2
+  project: new_merge-hdrn8
+  url: https://universe.roboflow.com/satelliteseg/new_merge-hdrn8/dataset/2
   version: 2
   workspace: satelliteseg
-test: /kaggle/working/merged-project-2/data.yaml
-train: ../train/images
-val: ../valid/images
+test: /content/new_merge-2/test
+train: /content/new_merge-2/train
+val: /content/new_merge-2/valid
+

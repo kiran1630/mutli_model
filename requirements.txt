@@ -1,0 +1,12 @@
+streamlit
+opencv-python
+torch
+tensorflow
+ultralytics
+pillow
+matplotlib
+seaborn
+folium
+streamlit-folium
+selenium
+pyyaml
